@@ -1,7 +1,8 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 import pyboleto
-from pyboleto.bank.real import BoletoReal
+# from pyboleto.bank.real import BoletoReal
+from pyboleto.bank.itau import BoletoItau
 from pyboleto.bank.bradesco import BoletoBradesco
 from pyboleto.bank.caixa import BoletoCaixa
 from pyboleto.bank.bancodobrasil import BoletoBB
@@ -276,8 +277,8 @@ def print_all():
     print("Caixa")
     print_caixa()
 
-    print("Real")
-    print_real()
+    # print("Real")
+    # print_real()
 
     print("Santander")
     print_santander()
