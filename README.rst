@@ -85,7 +85,7 @@ Para instalar usando o pip,::
 
 .. _pyboleto-installing-from-source:
 
-Baixando e instalando da fonte
+Como instalar a biblioteca
 --------------------------------------
 
 Baixe a última versão do pyboleto em
