@@ -9,6 +9,8 @@
     :license: BSD, see LICENSE for more details.
 
 """
+import base64
+import io
 import locale
 import os
 
@@ -18,6 +20,8 @@ from reportlab.lib.pagesizes import A4, landscape as pagesize_landscape
 from reportlab.lib.units import mm, cm
 from reportlab.pdfbase.pdfmetrics import stringWidth
 from reportlab.pdfgen import canvas
+from reportlab.lib.utils import ImageReader
+from PIL import Image
 
 
 class BoletoPDF(object):
@@ -228,9 +232,9 @@ class BoletoPDF(object):
                             self.height_line)
 
         if boleto_dados.logo_image:
-            logo_image_path = load_image(boleto_dados.logo_image)
+            image_reportlab = load_image(boleto_dados.logo_image)
             self.pdf_canvas.drawImage(
-                logo_image_path,
+                image_reportlab,
                 0, (linha_inicial + 3) * self.height_line + 3,
                 40 * mm,
                 self.height_line,
@@ -397,6 +401,34 @@ class BoletoPDF(object):
                 (-3 * cm + ((linha_inicial + 0) * self.height_line)) -
                 (i * heigh_font),
                 demonstrativo[i])
+
+        if boleto_dados.logo_image:
+            base64image = "iVBORw0KGgoAAAANSUhEUgAAAPoAAAD6AQAAAACgl2eQAAAC1klEQVR4Xu2XS47rIBBFYSNm/7vopcBG4J1TRG0ng9YbtKsnrkSKDSfSTX0uTlk/x1f5XPmIB9jxADseYMf/Ab2UOusaax5ttll8DxcTgcF79CpZxzxKW9y5mAl014mGSpa9rZtJBUYnR4pckaij/QFAkhoMFfLGLCUDvFmcbrJx1OVnrKcB9uf4jM+u/tz/ZcCYCCRXJKwNqkbj7MgCemQo6sMlI1wonD2cCKjMSjk10bm4CFJTgd62ToYHmS1umZ6zaRMAlJEct6pJimzBqDENYFR6gQipxRQBL4cpD7Bcs+3jBA+jVi6N+MgCwjqax5py27Jox3uxbgc8xzxVD9dH2NewWJkAy9wyK3qXpwl1A7lW83bAVNVIThSset92rdIAvHPQr/TqcICGJgLIwZIH2J8+YGBj6NzJIg5VZgEIZNHkYOdMDmIt1KWa9wMjBqbooGhV3bR/r7/idoBeYZXnXkgu1BjCz19xP2B6Op3SXRsv97CNEgHSNLZ796jacpDGuPyK+4HpWdL0kCPUwiryLFYCYNtao31h93b6p+qoeQBNq4kTtCqdgmTH2W9kAUxtt2d1U8zE+SXon0SANaZVA5lyCNXRPO/zACpUHZ5ptnw5P1Tqu1gJAMOitBJOFpOMmzXxPMDjnP6IfXbsHr9yHd7bAded3kNh1IsHL2t3PdRuB+JER1ZRo1t8vNwsDRj7dG9LR53Uiz/F79XMAFhdkSJONdA9upfhvR9YkSsyBFg0khavs1gJwHRumtZVI01LT8NVzmomADZKMU0y3TFC9XEReT+gZSCKRFGrEikLX/sWmQAYeJcmXuNoVfH74X47oCL2lUW8PFVDTwRsET88WkmZeVOkGvMASoXQ4tD6XyhsXd3JgBliZlBGwlYk7yxWEsBC6z7eQHm4MDru5wG80ee04qNc6mGhOQ+IyrCL0ub0eCVswrKAn+IBdjzAjgfY8QvAP6fWH62SBojlAAAAAElFTkSuQmCC"
+            image_bytes = base64.b64decode(base64image)
+            image = Image.open(io.BytesIO(image_bytes))
+            image_reportlab = ImageReader(image)
+            self.pdf_canvas.drawImage(
+                image_reportlab,
+                0,
+                (-3 * cm + ((linha_inicial + 0) * self.height_line)) -
+                (len(demonstrativo) * heigh_font) - 36 * mm,
+                36 * mm,
+                36 * mm,
+                preserveAspectRatio=True,
+                anchor='sw'
+            )
+
+            self.pdf_canvas.drawString(36 * mm + self.space,
+                (-3 * cm + ((linha_inicial + 0) * self.height_line)) -
+                (len(demonstrativo) * heigh_font) - 6 * mm,
+                'Para realizar o pagamento a qualquer instante, leia o QR Code'
+            )
+
+            self.pdf_canvas.drawString(36 * mm + self.space,
+                (-3 * cm + ((linha_inicial + 0) * self.height_line)) -
+                (heigh_font * (len(demonstrativo) + 1)) - 6 * mm,
+                'no celular e pague por Pix.'
+            )
 
         self.pdf_canvas.setFont('Helvetica', 9)
 
