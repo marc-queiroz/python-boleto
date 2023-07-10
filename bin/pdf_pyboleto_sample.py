@@ -304,9 +304,10 @@ def print_itau():
 
     # Itau Formato normal - uma pagina por folha A4
     boleto = BoletoPDF('boleto-itau-formato-normal-teste.pdf')
-    for i in range(len(listaDadosItau)):
-        boleto.drawBoleto(listaDadosItau[i])
-        boleto.nextPage()
+    # for i in range(len(listaDadosItau)):
+    #     boleto.drawBoleto(listaDadosItau[i])
+    #     boleto.nextPage()
+    boleto.drawBoleto(listaDadosItau[0])
     boleto.save()
 
 
